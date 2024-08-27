@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: core
+  datasource:
+    url: jdbc:postgresql://localhost:5432/orderdb
+    username: userdev
+    password: userdev
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  rabbitmq:
+    host: rabbitmq
+    port: 5672
+    username: guest
+    password: guest

@@ -1,0 +1,79 @@
+services:
+  order-service:
+    image: order-service
+    build:
+      context: ./order
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8080"
+    networks:
+      - microservices-network
+    depends_on:
+      - rabbitmq
+      - postgres
+
+  payment-service:
+    image: payment-service
+    build:
+      context: ./payment
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8080"
+    networks:
+      - microservices-network
+    depends_on:
+      - rabbitmq
+      - postgres
+
+  core-service:
+    image: core-service
+    build:
+      context: ./core
+      dockerfile: Dockerfile
+    ports:
+      - "8083:8080"
+    environment:
+      SPRING_DATASOURCE_URL: 'jdbc:postgresql://postgres:5432/orderdb'
+      SPRING_DATASOURCE_USERNAME: 'userdev'
+      SPRING_DATASOURCE_PASSWORD: 'userdev'
+    networks:
+      - microservices-network
+    depends_on:
+      - rabbitmq
+      - postgres
+
+  mailing-service:
+    image: mailing-service
+    build:
+      context: ./mailing
+      dockerfile: Dockerfile
+    ports:
+      - "8084:8080"
+    networks:
+      - microservices-network
+    depends_on:
+      - rabbitmq
+      - postgres
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - microservices-network
+
+  postgres:
+    image: 'postgres:latest'
+    environment:
+      POSTGRES_DB: 'orderdb'
+      POSTGRES_USER: 'userdev'
+      POSTGRES_PASSWORD: 'userdev'
+    ports:
+      - "5432:5432"
+    networks:
+      - microservices-network
+
+networks:
+  microservices-network:
+    driver: bridge
